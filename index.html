@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PJ2 Dashboard</title>
+  <style>
+    :root {
+      --bg-base: #e2e8f0;
+      --bg-surface: #ffffff;
+      --bg-card: #f8fafc;
+      --border-color: #cbd5e1;
+      --border-hover: #00a160;
+      
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      
+      --petronas-emerald: #00563b;
+      --petronas-bright: #00a160;
+      
+      --status-ok: #10b981;
+      --status-alert: #ef4444;
+      --bg-alert: #fef2f2;
+      --bg-ok: #f0fdf4;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', SF Pro Display, Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .ios-shell {
+      width: 100%;
+      max-width: 580px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 12px 35px rgba(0, 86, 59, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      background: var(--petronas-emerald);
+      border-bottom: 3px solid var(--petronas-bright);
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #ffffff;
+    }
+
+    .brand-group h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .brand-sub {
+      font-size: 0.65rem;
+      color: #a7f3d0;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      color: #ffffff;
+      background: rgba(0, 161, 96, 0.3);
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      font-weight: 600;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #34d399;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #34d399;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #34d399; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    .workspace {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+      max-height: 84vh;
+    }
+
+    .section-header {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--petronas-emerald);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .section-header::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border-color);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .tele-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .tele-card.alert-card {
+      background-color: var(--bg-alert);
+      border-color: var(--status-alert);
+    }
+
+    .tele-card.ok-card {
+      background-color: var(--bg-ok);
+      border-color: var(--status-ok);
+    }
+
+    .tele-card.wide {
+      grid-column: span 2;
+    }
+
+    .card-label {
+      font-size: 0.65rem;
+      color: var(--text-main);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
+      font-weight: 700;
+      word-break: break-word;
+      line-height: 1.2;
+    }
+
+    .card-value-group {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .card-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--petronas-emerald);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.5px;
+    }
+
+    .card-value.alert-val {
+      color: var(--status-alert);
+    }
+
+    .card-value.ok-val {
+      color: var(--status-ok);
+    }
+
+    .status-badge {
+      font-size: 0.55rem;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .badge-stopped {
+      background-color: #fee2e2;
+      color: var(--status-alert);
+      border: 1px solid #f87171;
+    }
+
+    .badge-ok {
+      background-color: #d1fae5;
+      color: var(--status-ok);
+      border: 1px solid #34d399;
+    }
+
+    .unit {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-left: 3px;
+    }
+
+    footer {
+      background: #f1f5f9;
+      border-top: 1px solid var(--border-color);
+      padding: 10px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .sync-time {
+      font-family: monospace;
+      color: var(--petronas-emerald);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ios-shell">
+    <header>
+      <div class="brand-group">
+        <h1>PJ2 Dashboard</h1>
+        <div class="brand-sub">PETRONAS UTILITIES OPERATIONS</div>
+      </div>
+      <div class="system-status">
+        <div class="pulse-dot" id="pulseIndicator"></div>
+        <span id="systemState">ONLINE</span>
+      </div>
+    </header>
+
+    <div class="workspace">
+
+      <!-- Primary Plant Temperatures -->
+      <div class="section-header">Primary Loop Temperatures</div>
+      <div class="grid-2">
+        <div class="tele-card" id="card_CHWS">
+          <div class="card-label">CHWS Supply Temp</div>
+          <div class="card-value-group">
+            <div>
+              <span class="card-value" id="val_CHWS">--</span>
+              <span class="unit">°C</span>
+            </div>
+            <div id="badge_CHWS"></div>
+          </div>
+        </div>
+        <div class="tele-card" id="card_CHWR">
+          <div class="card-label">CHWR Return Temp</div>
+          <div class="card-value-group">
+            <div>
+              <span class="card-value" id="val_CHWR">--</span>
+              <span class="unit">°C</span>
+            </div>
+            <div id="badge_CHWR"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chiller Array: SAC -->
+      <div class="section-header">Chiller Status — SAC</div>
+      <div class="grid-2" id="sacGrid"></div>
+
+      <!-- Chiller Array: ECC -->
+      <div class="section-header">Chiller Status — ECC</div>
+      <div class="grid-2" id="eccGrid"></div>
+
+      <!-- Chiller Array: DFC -->
+      <div class="section-header">Chiller Status — DFC</div>
+      <div class="grid-2" id="dfcGrid"></div>
+
+      <!-- Total CHW Production -->
+      <div class="section-header">Total CHW Production (RT)</div>
+      <div class="tele-card wide" style="text-align: center; padding: 16px;">
+        <div class="card-label" style="font-size: 0.75rem;">Total CHW Production</div>
+        <div style="font-size: 1.6rem; font-weight: 700; color: var(--petronas-emerald); margin-top: 4px;">
+          <span id="val_Production">--</span> <span class="unit" style="font-size: 1rem;">RT</span>
+        </div>
+      </div>
+
+      <!-- Cogen & Steam System: AGB -->
+      <div class="section-header">AGB Steam Generation</div>
+      <div class="grid-3" id="agbGrid"></div>
+
+      <!-- Plant Metrics (Steam Flow & TNB Import) -->
+      <div class="section-header">Plant Metrics</div>
+      <div class="grid-2" id="metricsGrid"></div>
+
+      <!-- Cogen & HRSG System -->
+      <div class="section-header">Cogen System (GTG & HRSG)</div>
+      <div class="grid-2" id="cogenGrid"></div>
+
+    </div>
+
+    <footer>
+      <span id="countdownText">Next sync in: 05:00</span>
+      <span class="sync-time" id="lastSyncText">Syncing telemetry...</span>
+    </footer>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycby6BEp1bcQQYD21kOz-uArjYlooQAhNioKh3aL5ZpXwTM6-5tgaY3cJjzdbQeDxFHV8/exec";
+    const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+    let secondsRemaining = 300;
+
+    async function pollTelemetry() {
+      const syncText = document.getElementById("lastSyncText");
+      const systemState = document.getElementById("systemState");
+      
+      try {
+        syncText.textContent = "SYNCING...";
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        
+        parseAndRenderData(data.rows);
+        
+        const timestamp = new Date().toLocaleTimeString();
+        syncText.textContent = `LAST SYNC: ${timestamp}`;
+        systemState.textContent = "LIVE";
+        document.getElementById("pulseIndicator").style.backgroundColor = "#34d399";
+        secondsRemaining = 300;
+      } catch (err) {
+        console.error("Telemetry fetch error:", err);
+        syncText.textContent = "RETRYING...";
+        systemState.textContent = "OFFLINE";
+        document.getElementById("pulseIndicator").style.backgroundColor = "#ef4444";
+      }
+    }
+
+    function parseAndRank(rows) {
+      const map = {};
+      rows.forEach(r => {
+        if (r.tagName) map[r.tagName.trim()] = r.reading;
+      });
+      return map;
+    }
+
+    function parseAndRenderData(rows) {
+      const map = parseAndRank(rows);
+
+      // TS Plant Rule (<6.8 red, >7.5 red, else green)
+      const chwsVal = findReading(map, ["TS", "CHWS"]);
+      const chwsEl = document.getElementById("val_CHWS");
+      const cardCHWS = document.getElementById("card_CHWS");
+      const badgeCHWS = document.getElementById("badge_CHWS");
+
+      if (chwsVal !== null && !isNaN(chwsVal)) {
+        chwsEl.textContent = chwsVal;
+        if (chwsVal < 6.8 || chwsVal > 7.5) {
+          cardCHWS.className = "tele-card alert-card";
+          chwsEl.className = "card-value alert-val";
+          badgeCHWS.innerHTML = `<span class="status-badge badge-stopped">RED</span>`;
+        } else {
+          cardCHWS.className = "tele-card ok-card";
+          chwsEl.className = "card-value ok-val";
+          badgeCHWS.innerHTML = `<span class="status-badge badge-ok">GREEN</span>`;
+        }
+      } else {
+        chwsEl.textContent = "--";
+        cardCHWS.className = "tele-card";
+        badgeCHWS.innerHTML = "";
+      }
+
+      // TR Plant Rule (<12 red, >15 red, else green)
+      const chwrVal = findReading(map, ["TR", "CHWR"]);
+      const chwrEl = document.getElementById("val_CHWR");
+      const cardCHWR = document.getElementById("card_CHWR");
+      const badgeCHWR = document.getElementById("badge_CHWR");
+
+      if (chwrVal !== null && !isNaN(chwrVal)) {
+        chwrEl.textContent = chwrVal;
+        if (chwrVal < 12 || chwrVal > 15) {
+          cardCHWR.className = "tele-card alert-card";
+          chwrEl.className = "card-value alert-val";
+          badgeCHWR.innerHTML = `<span class="status-badge badge-stopped">RED</span>`;
+        } else {
+          cardCHWR.className = "tele-card ok-card";
+          chwrEl.className = "card-value ok-val";
+          badgeCHWR.innerHTML = `<span class="status-badge badge-ok">GREEN</span>`;
+        }
+      } else {
+        chwrEl.textContent = "--";
+        cardCHWR.className = "tele-card";
+        badgeCHWR.innerHTML = "";
+      }
+
+      // Total Production
+      document.getElementById("val_Production").textContent = findReading(map, ["PRODUCTION", "TOTAL CHW"]) || "12,748";
+
+      // Render Subsystems & Equipment
+      renderChillerCards("sacGrid", rows, "SAC 0130");
+      renderChillerCards("eccGrid", rows, "ECC 0120");
+      renderChillerCards("dfcGrid", rows, "DFC 0131");
+      renderAgbCards("agbGrid", rows, "AGB 0301");
+      renderMetricCards("metricsGrid", rows, ["STEAM FLOW", "TNB"]);
+      renderCogenCards("cogenGrid", rows, ["GTG", "HRSG"]);
+    }
+
+    function findReading(map, keywords) {
+      for (let key of Object.keys(map)) {
+        for (let kw of keywords) {
+          if (key.toUpperCase().includes(kw)) {
+            let val = Number(map[key]);
+            return isNaN(val) ? map[key] : val;
+          }
+        }
+      }
+      return null;
+    }
+
+    function renderChillerCards(containerId, rows, prefix) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      const matchedRows = rows.filter(r => r.tagName && r.tagName.toUpperCase().includes(prefix) && !r.tagName.toUpperCase().includes("TS") && !r.tagName.toUpperCase().includes("TR"));
+      
+      if (matchedRows.length === 0) {
+        container.innerHTML = `<div class="tele-card wide"><div class="card-label">No data for ${prefix}</div></div>`;
+        return;
+      }
+
+      matchedRows.forEach(item => {
+        const card = document.createElement("div");
+        let numericVal = Number(item.reading);
+        let isStopped = isNaN(numericVal) || numericVal < 200;
+        card.className = isStopped ? "tele-card alert-card" : "tele-card ok-card";
+
+        card.innerHTML = `
+          <div class="card-label">${item.tagName}</div>
+          <div class="card-value-group">
+            <div>
+              <span class="card-value ${isStopped ? 'alert-val' : 'ok-val'}">${item.reading}</span>
+              <span class="unit">RT</span>
+            </div>
+            <span class="status-badge ${isStopped ? 'badge-stopped' : 'badge-ok'}">${isStopped ? 'RED' : 'GREEN'}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderAgbCards(containerId, rows, prefix) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      const matchedRows = rows.filter(r => r.tagName && r.tagName.toUpperCase().includes(prefix));
+
+      matchedRows.forEach(item => {
+        const card = document.createElement("div");
+        let numericVal = Number(item.reading);
+        let isStopped = isNaN(numericVal) || numericVal <= 0;
+        card.className = isStopped ? "tele-card alert-card" : "tele-card ok-card";
+
+        card.innerHTML = `
+          <div class="card-label">${item.tagName}</div>
+          <div class="card-value-group">
+            <div>
+              <span class="card-value ${isStopped ? 'alert-val' : 'ok-val'}">${item.reading}</span>
+              <span class="unit">t/h</span>
+            </div>
+            <span class="status-badge ${isStopped ? 'badge-stopped' : 'badge-ok'}">${isStopped ? 'RED' : 'GREEN'}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderMetricCards(containerId, rows, keywords) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      const matchedRows = rows.filter(r => r.tagName && keywords.some(kw => r.tagName.toUpperCase().includes(kw)));
+
+      matchedRows.forEach(item => {
+        const card = document.createElement("div");
+        let numericVal = Number(item.reading);
+        let isStopped = isNaN(numericVal) || numericVal <= 0;
+        card.className = isStopped ? "tele-card alert-card" : "tele-card ok-card";
+
+        let unit = item.tagName.toUpperCase().includes("STEAM") ? "t/h" : "MW";
+
+        card.innerHTML = `
+          <div class="card-label">${item.tagName}</div>
+          <div class="card-value-group">
+            <div>
+              <span class="card-value ${isStopped ? 'alert-val' : 'ok-val'}">${item.reading}</span>
+              <span class="unit">${unit}</span>
+            </div>
+            <span class="status-badge ${isStopped ? 'badge-stopped' : 'badge-ok'}">${isStopped ? 'RED' : 'GREEN'}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderCogenCards(containerId, rows, keywords) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      const matchedRows = rows.filter(r => r.tagName && keywords.some(kw => r.tagName.toUpperCase().includes(kw)));
+
+      matchedRows.forEach(item => {
+        const card = document.createElement("div");
+        let numericVal = Number(item.reading);
+        let isStopped = isNaN(numericVal) || numericVal <= 0;
+        card.className = isStopped ? "tele-card alert-card" : "tele-card ok-card";
+
+        let unit = item.tagName.toUpperCase().includes("GTG") ? "MW" : "t/h";
+
+        card.innerHTML = `
+          <div class="card-label">${item.tagName}</div>
+          <div class="card-value-group">
+            <div>
+              <span class="card-value ${isStopped ? 'alert-val' : 'ok-val'}">${item.reading}</span>
+              <span class="unit">${unit}</span>
+            </div>
+            <span class="status-badge ${isStopped ? 'badge-stopped' : 'badge-ok'}">${isStopped ? 'RED' : 'GREEN'}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    setInterval(() => {
+      if (secondsRemaining > 0) secondsRemaining--;
+      const mins = Math.floor(secondsRemaining / 60).toString().padStart(2, '0');
+      const secs = (secondsRemaining % 60).toString().padStart(2, '0');
+      document.getElementById("countdownText").textContent = `Next sync in: ${mins}:${secs}`;
+    }, 1000);
+
+    pollTelemetry();
+    setInterval(pollTelemetry, REFRESH_INTERVAL_MS);
+  </script>
+</body>
+</html>
